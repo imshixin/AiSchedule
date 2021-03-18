@@ -14,3 +14,6 @@
 - 文山学院-正方
 - 苏州卫生职业技术学院-正方
 - 贵州中医药大学时珍学院-正方
+
+仓库内只放了parser的代码（ajax请求的放了provider）
+小爱课程表开发文档：https://ldtu0m3md0.feishu.cn/docs/doccnhZPl8KnswEthRXUz8ivnhb
