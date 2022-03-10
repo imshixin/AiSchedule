@@ -2,7 +2,7 @@
  * @Author: imsixn
  * @Date: 2021-04-10 00:09:51
  * @LastEditors: imsixn
- * @LastEditTime: 2022-02-27 13:58:19
+ * @LastEditTime: 2022-03-10 13:21:13
  * @Description: update school url
  */
 const xhr = new XMLHttpRequest()
@@ -46,42 +46,53 @@ function encodeInp(input) {
   return output
 }
 
-function scheduleHtmlProvider(iframeContent = "", frameContent = "", dom = document) {
-  //除函数名外都可编辑
-  //以下为示例，您可以完全重写或在此基础上更改
-  confirm(`
-  未按此步骤导入可能会失败，可退出重来
+async function scheduleHtmlProvider(iframeContent = "", frameContent = "", dom = document) {
+  await loadTool("AIScheduleTools")
+  await AIScheduleAlert(`
   使用步骤：
   1.登录webvpn(登陆后请勿点到强智教务网去)
   2.点击一键导入，输入账号密码，你的校区(输入前面的数字)
   `)
-  let href = dom.location.href
-  let ret1 = sendQuest('GET', 'https://vpn.xmoc.edu.cn/user/portal_groups').resp
+  let href = ""
+  let ret1 = sendQuest('GET', '/user/portal_groups').resp
   let data = JSON.parse(ret1)['data']
   let red = data[0]['resource'][0]['redirect']
+  href += red.slice(1)
   console.log(href)
-  if (href.endsWith('/')) {
-    href += red.slice(1)
-  }
   if (!href.endsWith('/')) {
     href += '/'
   }
-  let username = prompt('请输入用户名')
-  let password = prompt('请输入密码')
+  let username = await AISchedulePrompt({
+    titleText:"提示",
+    tipText:'请输入教务网用户名',
+    defaultText:"",
+    validator:(v)=>!/[a-zA-Z0-9]+/.test(v)
+  })
+  let password = await AISchedulePrompt({
+    titleText:"提示",
+    tipText:'请输入密码',
+    defaultText:"",
+    validator:(v)=>false
+  })
   let schcode='31ABEE44EFBD4DDAA228A354F8AA2227'
-  let school = prompt(`
-  请选择校区(填数字)：
-  1.翔安校区
-  2.思明校区
-`)
+  let school = await AISchedulePrompt({
+    titleText:"提示",
+    tipText:`
+    请选择校区(填数字)：
+    1.翔安校区
+    2.思明校区`,
+    defaultText:"1",
+    validator:(v)=>!/[12]?/.test(v)
+  })
+
   if(school==2) schcode="2536FEA389E345EFAAC1E2FF32D80C84"
 
   let {
     resp: login
-  } = sendQuest('POST', href + 'xk/LoginToXk', encodeURI(`userAccount=${username}&userPassword=&encoded=${encodeInp(username)}%%%${encodeInp(password)}`))
+  } = sendQuest('POST', href + 'xk/LoginToXk', encodeURI(`userAccount=${encodeURIComponent(username)}&userPassword=&encoded=${encodeURIComponent(encodeInp(username))}%%%${encodeURIComponent(encodeInp(password))}`))
   if (login.match('请输入账号')) {
     //登录失败
-    throw Error('登录失败，请检查账号是否正确或加群')
+    await AIScheduleAlert("登录失败，检查账号密码并确保在vpn登录后点击一键导入")
   }
   let ret2 = sendQuest("POST", href + 'xskb/xskb_list.do',`kbjcmsid=${schcode}`).resp
   let start = ret2.indexOf('<table id="kbtable"')

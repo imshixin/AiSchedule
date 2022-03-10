@@ -2,17 +2,12 @@
  * @Author: imsixn
  * @Date: 2021-04-09 22:56:24
  * @LastEditors: imsixn
- * @LastEditTime: 2022-03-10 12:25:33
+ * @LastEditTime: 2022-03-10 13:19:43
  * @Description: file content
  */
 function scheduleHtmlParser(html) {
-  //除函数名外都可编辑
-  //传入的参数为上一步函数获取到的html
-  //可使用正则匹配
-  //可使用解析dom匹配，工具内置了$，跟jquery使用方法一样，直接用就可以了，参考：https://juejin.im/post/5ea131f76fb9a03c8122d6b9
-  //以下为示例，您可以完全重写或在此基础上更改
-  // let result = []
   const $ = cheerio.load(html, { decodeEntities: false })
+
   console.time('scheduleHtmlParser')
   let result = {
     courseInfos: [],
@@ -56,6 +51,11 @@ function scheduleHtmlParser(html) {
                   break
                 case '教室':
                   courseInfo.position = $(v).text().trim()
+                  //判断是否有重复课程
+                  if(result.courseInfos.some(vv => JSON.stringify(vv) == JSON.stringify(courseInfo))){
+                    console.log("存在重复课程,拒绝添加：",courseInfo)
+                    break
+                  }
                   result.courseInfos.push(Object.assign({}, courseInfo))
                   courseInfo.name = ''
                   break
@@ -63,16 +63,14 @@ function scheduleHtmlParser(html) {
             }
           })
         })
+
+
     })
   })
   console.timeEnd('scheduleHtmlParser')
-  console.log(result)
   return result.courseInfos
 }
-/* 检查重复课程 */
-function checkCourse(courses, course) {
-  return courses.some((v, i) => JSON.stringify(v) == JSON.stringify(course))
-}
+
 function getSectionAndWeeks(str) {
 
   let infos = { weeks: [], sections: [] }
@@ -109,5 +107,5 @@ function getSectionAndWeeks(str) {
   console.log(str, infos)
   return infos
 }
-// console.log(getSectionAndWeeks('15,18-19(周)[03-04节]'))
-// console.log(getSectionAndWeeks('15,18-19(周)[03-04节]'))
+/* console.log(getSectionAndWeeks('15,18-19(周)[03-04节]'))
+console.log(getSectionAndWeeks('15,18-19(周)[03-04节]')) */
