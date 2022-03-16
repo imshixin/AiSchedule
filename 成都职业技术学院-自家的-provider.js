@@ -1,3 +1,10 @@
+/*
+ * @Author: imsixn
+ * @Date: 2021-03-12 23:25:02
+ * @LastEditors: imsixn
+ * @LastEditTime: 2022-03-10 13:49:12
+ * @Description: file content
+ */
 function scheduleHtmlProvider(iframeContent = "", frameContent = "", dom = document) {
   //除函数名外都可编辑
   //以下为示例，您可以完全重写或在此基础上更改
@@ -30,20 +37,20 @@ function scheduleHtmlProvider(iframeContent = "", frameContent = "", dom = docum
   }
   return JSON.stringify(courses);
 }
-function pureJson(cj) {
+function pureJson(week_courses) {
   let pure_courses = {};
   let lessonIds=[]
-  for (let i = 0; i < cj.length; i++) {
-    let day = getDay(cj[i].weekOfDay);
-    let sections = getSection(cj[i].eduTimeSchedule.eduLesson);
-    let key = `${cj[i].courseId}day${day}sec${sections[0].section}`
+  for (let c of week_courses) {
+    let day = getDay(c.weekOfDay);
+    let sections = getSection(c.eduTimeSchedule.eduLesson);
+    let key = `${c.courseId}day${day}sec${sections[0].section}`
     pure_courses[key] = {
-      teacher: cj[i].teacherName,
-      name: cj[i].courseName,
+      teacher: c.teacherName,
+      name: c.courseName,
       day: day,
-      position: cj[i].placeName,
+      position: c.placeName,
       sections: sections,
-      weeks: [cj[i].week]
+      weeks: [c.week]
     }
     lessonIds.push(key)
   }

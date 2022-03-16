@@ -1,3 +1,10 @@
+/*
+ * @Author: imsixn
+ * @Date: 2022-03-16 20:56:26
+ * @LastEditors: imsixn
+ * @LastEditTime: 2022-03-16 20:56:27
+ * @Description:正方通用，和北京社会管理代码相同
+ */
 function scheduleHtmlParser(html) {
   //除函数名外都可编辑
   //传入的参数为上一步函数获取到的html
